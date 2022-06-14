@@ -23,9 +23,13 @@ namespace NLayer.Service
 
         private readonly IUnitOfWork _unitOfWork;
 
-        public ProductService(AppDbContext context)
+        public ProductService(AppDbContext context,IGenericRepository<Category> categoryRepository, IGenericRepository<Product> productRepository, IGenericRepository<ProductFeature> productFeatureRepository, IUnitOfWork unitOfWork)
         {
             _context = context;
+            _categoryRepository = categoryRepository;
+            _productRepository = productRepository;
+            _productFeatureRepository = productFeatureRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<Response<List<ProductDto>>> GetAll()
@@ -55,13 +59,27 @@ namespace NLayer.Service
                 Status = 200
             };
         }
-        public async Task<Response<string>> CreateAll(Category category, Product product, ProductFeature productFeature)
+        public async Task<Response<string>> CreateAll(AllDto allDto)
         {
-            await _productRepository.Add(product);
+            var category = new Category()
+            {
+                Name = allDto.CategoryName,
+            };
+            var product = new Product()
+            {
+                Name = allDto.ProductName,
+                Price = allDto.Price,
+            };
+            var productFeature = new ProductFeature()
+            {
+                Height = allDto.Height,
+                Width = allDto.Width,
+            };
+
+            category.Products.Add(product);
+            product.ProductFeature = productFeature;
+               
             await _categoryRepository.Add(category);
-            await _productFeatureRepository.Add(productFeature);
-
-
             await _unitOfWork.Commit();
             return new Response<string>();
         }
