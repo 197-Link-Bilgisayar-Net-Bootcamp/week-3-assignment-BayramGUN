@@ -10,15 +10,14 @@ namespace NLayer.Data.Repository
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
-        private readonly DbSet<T> _dbSet;
-
+        private readonly AppDbContext _context;
         public GenericRepository(AppDbContext context)
         {
-            _dbSet = context.Set<T>();
+            _context = context;
         }
         public async Task Add(T entity)
         {
-            await _dbSet.AddAsync(entity);
+            await _context.Set<T>().AddAsync(entity);
         }
     }
 }
