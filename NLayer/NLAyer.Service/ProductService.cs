@@ -23,7 +23,9 @@ namespace NLayer.Service
 
         private readonly IUnitOfWork _unitOfWork;
 
-        public ProductService(AppDbContext context,IGenericRepository<Category> categoryRepository, IGenericRepository<Product> productRepository, IGenericRepository<ProductFeature> productFeatureRepository, IUnitOfWork unitOfWork)
+        public ProductService(AppDbContext context,IGenericRepository<Category> categoryRepository, 
+                IGenericRepository<Product> productRepository, 
+                IGenericRepository<ProductFeature> productFeatureRepository, IUnitOfWork unitOfWork)
         {
             _context = context;
             _categoryRepository = categoryRepository;
@@ -79,9 +81,18 @@ namespace NLayer.Service
             category.Products.Add(product);
             product.ProductFeature = productFeature;
                
+            
             await _categoryRepository.Add(category);
             await _unitOfWork.Commit();
-            return new Response<string>();
+            var response = new Response<string>();
+            return response;
+        }
+        public async Task<Response<string>> DeleteData(int id)
+        {
+            await _productRepository.Delete(id);
+            await _unitOfWork.Commit();
+            var response = new Response<string>();
+            return response;
         }
     }
 }

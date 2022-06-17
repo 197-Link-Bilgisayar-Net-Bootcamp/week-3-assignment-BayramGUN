@@ -39,7 +39,13 @@ namespace NLayer.API.Controllers
             var response = await _productService.CreateAll(allDto);
             return new ObjectResult(response) { StatusCode = response.Status };
         }
-        
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            //var idS = Convert.ToInt32(id);
+            var response = await _productService.DeleteData(id);
+            return new ObjectResult(response) { StatusCode = response.Status };
+        }
        
     }
 }

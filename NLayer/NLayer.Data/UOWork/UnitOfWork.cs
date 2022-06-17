@@ -21,6 +21,5 @@ namespace NLayer.Data.UOWork
         {
             await _context.SaveChangesAsync();
         }
-
     }
 }

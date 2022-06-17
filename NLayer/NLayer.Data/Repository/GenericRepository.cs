@@ -19,5 +19,13 @@ namespace NLayer.Data.Repository
         {
             await _context.Set<T>().AddAsync(entity);
         }
+        public virtual async Task Delete(int id)
+        {
+            T? entity = await _context.Set<T>().FindAsync(id);
+            if(entity is null)
+                return;
+            
+            _context.Remove(entity);
+        }
     }
 }
