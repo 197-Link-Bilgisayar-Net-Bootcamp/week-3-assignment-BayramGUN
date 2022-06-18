@@ -23,8 +23,7 @@ namespace NLayer.Data.Repository
         {
             T? entity = await _context.Set<T>().FindAsync(id);
             if(entity is null)
-                return;
-            
+                return;       
             _context.Remove(entity);
         }
     }

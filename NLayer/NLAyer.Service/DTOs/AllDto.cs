@@ -8,8 +8,8 @@ namespace NLayer.Service.DTOs
 {
     public class AllDto
     {
-        public string CategoryName { get; set; }
-        public string ProductName { get; set; }
+        public string CategoryName { get; set; } = string.Empty;
+        public string ProductName { get; set; } = string.Empty;
         public decimal Price { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }

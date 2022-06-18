@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using NLayer.Data;
 using NLayer.Data.Models;
 using NLayer.Data.Repository;
@@ -13,19 +13,24 @@ using System.Threading.Tasks;
 
 namespace NLayer.Service
 {
-    public class ProductService
+    public class GenericService
     {
         private readonly AppDbContext _context;
 
         private readonly IGenericRepository<Product> _productRepository;
+        private readonly IGenericRepository<Category> _categoryRepository;
+        private readonly IGenericRepository<ProductFeature> _productFeatureRepository;
+
         private readonly IUnitOfWork _unitOfWork;
 
-        public ProductService(AppDbContext context, 
+        public GenericService(AppDbContext context,IGenericRepository<Category> categoryRepository, 
                 IGenericRepository<Product> productRepository, 
-                IUnitOfWork unitOfWork)
+                IGenericRepository<ProductFeature> productFeatureRepository, IUnitOfWork unitOfWork)
         {
             _context = context;
+            _categoryRepository = categoryRepository;
             _productRepository = productRepository;
+            _productFeatureRepository = productFeatureRepository;
             _unitOfWork = unitOfWork;
         }
 
@@ -56,37 +61,32 @@ namespace NLayer.Service
                 Status = 200
             };
         }
-
-        public Task CreateAll(AllDto allDto)
+   
+        public async Task<Response<string>> CreateAll(AllDto allDto)
         {
-            throw new NotImplementedException();
-        }
+            var category = new Category()
+            {
+                Name = allDto.CategoryName,
+            };
+            var product = new Product()
+            {
+                Name = allDto.ProductName,
+                Price = allDto.Price,
+            };
+            var productFeature = new ProductFeature()
+            {
+                Height = allDto.Height,
+                Width = allDto.Width,
+            };
 
-        public async Task<Response<ProductDto>> GetById(int id)
-        {
-            var product = await _context.Products.Where(p => p.Id == id).SingleOrDefaultAsync();
+            category.Products.Add(product);
+            product.ProductFeature = productFeature;
+               
             
-            if (product is null)
-            {
-                return new Response<ProductDto>()
-                {
-                    Data = null,
-                    Errors = new List<string>() { "There is no product with this id!" },
-                    Status = 404
-                };
-            }
-            var productDto = new ProductDto()
-            {
-                Id = product.Id,
-                Name = product.Name,
-                Price = product.Price
-            };
-            return new Response<ProductDto>()
-            {
-                Data = productDto,
-                Errors = null,
-                Status = 200
-            };
+            await _categoryRepository.Add(category);
+            await _unitOfWork.Commit();
+            var response = new Response<string>();
+            return response;
         }
         public async Task<Response<string>> DeleteData(int id)
         {
